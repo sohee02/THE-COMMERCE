@@ -21,18 +21,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
-import com.google.gson.Gson;
+
 import com.test.commerce.code.domain.CodeVO;
 import com.test.commerce.cmn.PcwkLogger;
 import com.test.commerce.user.dao.UserDao;
 import com.test.commerce.user.domain.UserVO;
 
+@WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class) // 스프링 테스트 컨텍스트 프레임워크의 JUnit 확장기능 지정
 @ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/spring/root-context.xml","file:src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml"})
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -42,7 +42,7 @@ public class UserDaoJUnitTest implements PcwkLogger {
 	UserDao dao;
 	
 	@Autowired // 테스트 오브젝트가 만들어지고 나면 스프링 테스트 컨텍스트에 자동으로 객체값으로 주입
-	WebApplicationContext context;
+	WebApplicationContext webApplicationContext;
 	
 	UserVO vo1;
 	UserVO vo2;
@@ -70,16 +70,16 @@ public class UserDaoJUnitTest implements PcwkLogger {
 		String email = "이메일";
 		String regDt    = "사용 하지 않음";
 		
-		mockMvc  = MockMvcBuilders.webAppContextSetup(context).build();
+		mockMvc  = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 		userList = Arrays.asList(
 				 new UserVO(id, pw, nickName, name, phone, email, regDt)
 		);
 		searchVO = new UserVO();
-		searchVO.setTitle(id);
+		searchVO.setId(id);
 				 
 	}
 	
-	@Ignore
+	//@Ignore
 	@Test
 	public void check() throws SQLException {
 	    int count = 0;
@@ -151,6 +151,29 @@ public class UserDaoJUnitTest implements PcwkLogger {
 	        LOG.debug("닉네임 사용 가능");
 	}
 
+	@Ignore
+	@Test
+	public void checkPhone() throws SQLException {
+	    int count = 0;
+
+	    count = dao.doCheckPhone(vo1);
+	    if (count == 1)
+	        LOG.debug("전화번호 중복");
+	    else
+	        LOG.debug("전화번호 사용 가능");
+
+	    count = dao.doCheckPhone(vo2); 
+	    if (count == 1)
+	        LOG.debug("전화번호 중복");
+	    else
+	        LOG.debug("전화번호 사용 가능");
+
+	    count = dao.doCheckPhone(vo3);
+	    if (count == 1)
+	        LOG.debug("전화번호 중복");
+	    else
+	        LOG.debug("전화번호 사용 가능");
+	}
 	
 	@Ignore
 	@Test
@@ -191,7 +214,7 @@ public class UserDaoJUnitTest implements PcwkLogger {
         assertThat(result, is(1));
     }
 	
-	//@Ignore
+	@Ignore
 	@Test
 	public void doRetrieve() throws Exception{
 		//검색
@@ -232,7 +255,7 @@ public class UserDaoJUnitTest implements PcwkLogger {
 	@Test
 	public void beans() {
 		assertNotNull(dao);
-		assertNotNull(context);
+		assertNotNull(webApplicationContext);
 	}
 
 }

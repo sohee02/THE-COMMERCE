@@ -67,5 +67,11 @@ public class UserDaoImpl implements UserDao, PcwkLogger {
 
 	}
 
+	@Override
+	public int doCheckPhone(UserVO inVO) throws SQLException {
+		return this.sqlSessionTemplate.update(NAMESPACE + DOT + "doCheckPhone", inVO);
+
+	}
+
 	
 }

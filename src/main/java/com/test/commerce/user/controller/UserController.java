@@ -181,6 +181,29 @@ public class UserController implements PcwkLogger {
 		return jsonString;
 	}
 
+	@RequestMapping(value = "/doCheckPhone.do", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@ResponseBody // HTTP 요청 부분의 body 부분이 그대로 브라우저에 전달
+	public String doCheckPhone(UserVO inVO) throws SQLException {
+		String jsonString = "";
+
+		LOG.debug("┌───────────────────┐");
+		LOG.debug("┃  doCheckPhone()     │ inVO: " + inVO);
+		LOG.debug("└───────────────────┘");
+
+		int count = userService.doCheckPhone(inVO);
+		LOG.debug("count: " + count);
+
+		String message = "";
+		if (0 == count) {
+			message = "사용 가능한 전화번호 입니다.";
+		} else {
+			message = "중복된 전화번호 입니다.";
+		}
+		MessageVO messageVO = new MessageVO(count + "", message);
+		jsonString = new Gson().toJson(messageVO);
+		LOG.debug("jsonString:" + jsonString);
+		return jsonString;
+	}
 
 	// password 검사
 	@RequestMapping(value = "/doCheckPassword.do", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")

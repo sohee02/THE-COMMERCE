@@ -61,5 +61,11 @@ public class UserServiceImpl implements UserService, PcwkLogger {
 
 	}
 
+	@Override
+	public int doCheckPhone(UserVO inVO) throws SQLException {
+		return userDao.doCheckPhone(inVO);
+
+	}
+
 	
 }

@@ -14,6 +14,8 @@ public interface UserDao {
 
 	int doCheckId(UserVO inVO) throws SQLException;
 	
+	int doCheckPhone(UserVO inVO) throws SQLException;
+
 	int doCheckNickName(UserVO inVO) throws SQLException;
 	
 	int doSave(UserVO inVO) throws SQLException;

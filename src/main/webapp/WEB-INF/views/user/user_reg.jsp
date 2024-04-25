@@ -9,20 +9,21 @@
 <meta charset="UTF-8">
 <script src="${CP }/resources/js/jquery-3.7.1.js"></script>
 <script src="${CP }/resources/js/eUtil.js"></script>
-<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" 
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" 
    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous"><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" 
-   integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script> -->
+   integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 <title>회원 가입</title>
 <script>
 document.addEventListener("DOMContentLoaded", function(){
     console.log("DOMContentLoaded");
     
-    const moveToMainBtn = document.querySelector("#moveToMain");
+    //const moveToMainBtn = document.querySelector("#moveToMain");
     // const moveToListBtn = document.getElementById("moveToList");
     const doSaveBtn = window.document.querySelector("#doSave");
     const regForm = document.querySelector("#userRegFrm");
     const doCheckIdBtn = document.querySelector("#doCheckId");
     const doCheckEmailBtn = document.querySelector("#doCheckEmail");
+    const doCheckNickNameBtn = document.querySelector("#doCheckNickName");
     const matchText = document.getElementById('passwordMatchText');
     
     
@@ -40,11 +41,11 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
     
-    moveToMainBtn.addEventListener("click", function(e){
-        console.log("moveToMainBtn");
+   // moveToMainBtn.addEventListener("click", function(e){
+   //     console.log("moveToMainBtn");
         
-        window.location.href = "/bdm/beforeMain/moveToMain.do";
-    });
+   //     window.location.href = "/commerce/beforeMain/moveToMain.do";
+   // });
     
     doCheckEmailBtn.addEventListener("click", function(e){
         console.log('doCheckEmailBtn');
@@ -57,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function(){
         
         $.ajax({
             type: "GET",
-            url:"/bdm/user/doCheckEmail.do",
+            url:"/commerce/user/doCheckEmail.do",
             asyn:"true",
             dataType:"html",
             data:{
@@ -95,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function(){
         
         $.ajax({
             type: "GET",
-            url:"/bdm/user/doCheckId.do",
+            url:"/commerce/user/doCheckId.do",
             asyn:"true",
             dataType:"html",
             data:{
@@ -124,6 +125,47 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     });
     
+    doCheckNickNameBtn.addEventListener("click", function(e){
+        console.log('doCheckNickNameBtn');
+        let nickName = regForm.nickName.value;
+        if(eUtil.isEmpty(nickName)==true){
+            alert('닉네임을 입력 하세요.');
+            regForm.nickName.focus();
+            return;
+        }
+        
+        $.ajax({
+            type: "GET",
+            url:"/commerce/user/doCheckNickName.do",
+            asyn:"true",
+            dataType:"html",
+            data:{
+            	nickName: nickName
+            },
+            success:function(data){//통신 성공     
+                console.log("data:" + data);
+               let parsedJSON = JSON.parse(data);
+               if("1" === parsedJSON.msgId){
+                   alert(parsedJSON.msgContents);
+                   document.querySelector("#nickNameCheck").value = 0;
+               }else{
+                   alert(parsedJSON.msgContents);
+                   document.querySelector("#nickNameCheck").value = 1;
+                   
+                   
+               }
+            
+            },
+            error:function(data){//실패시 처리
+                console.log("error:"+data);
+            },
+            complete:function(data){//성공/실패와 관계없이 수행!
+                console.log("complete:"+data);
+            }
+        });
+    });
+    
+    
     doSaveBtn.addEventListener("click", function(e){
         var radioBtn = document.getElementsByName('flexRadioDefault');
         var radioValue = '';
@@ -138,13 +180,11 @@ document.addEventListener("DOMContentLoaded", function(){
         console.log("doSaveBtn");
         console.log("javascript id:"+document.querySelector("#id").value);
         console.log("javascript pw:"+document.querySelector("#pw").value);
-        console.log("javascript email:"+document.querySelector("#email").value);
+        console.log("javascript nickName:"+document.querySelector("#nickName").value);
         console.log("javascript name:"+document.querySelector("#name").value);
-        console.log("javascript birth:"+document.querySelector("#birth").value);
-        console.log("javascript gender:"+radioValue);
-        console.log("javascript height:"+document.querySelector("#height").value);
-        console.log("javascript weight:"+document.querySelector("#weight").value);
-        console.log("javascript activity:"+document.querySelector("#activity").value);
+        console.log("javascript phone:"+document.querySelector("#phone").value);
+        console.log("javascript email:"+document.querySelector("#email").value);
+
         
         let id = regForm.id.value;
         if(eUtil.isEmpty(id)==true){
@@ -156,6 +196,12 @@ document.addEventListener("DOMContentLoaded", function(){
         if(eUtil.isEmpty(pw)==true){
             alert('비밀번호를 입력 하세요.');
             regForm.pw.focus();
+            return;
+        }
+        let nickName = regForm.nickName.value;
+        if(eUtil.isEmpty(nickName)==true){
+            alert('닉네임을 입력 하세요.');
+            regForm.nickName.focus();
             return;
         }
         let email = regForm.email.value;
@@ -170,28 +216,10 @@ document.addEventListener("DOMContentLoaded", function(){
             regForm.name.focus();
             return;
         }
-        let birth = regForm.birth.value;
-        if(eUtil.isEmpty(birth)==true){
-            alert('생년월일 6자리를 입력 하세요.');
-            regForm.birth.focus();
-            return;
-        }
-        let height = regForm.height.value;
-        if(eUtil.isEmpty(height)==true){
-            alert('키를 입력 하세요.');
-            regForm.height.focus();
-            return;
-        }
-        let weight = regForm.weight.value;
-        if(eUtil.isEmpty(weight)==true){
-            alert('몸무게를 입력 하세요.');
-            regForm.weight.focus();
-            return;
-        }
-        let activity = regForm.activity.value;
-        if(eUtil.isEmpty(activity)==true){
-            alert('활동지수를 입력 하세요.');
-            regForm.activity.focus();
+        let phone = regForm.phone.value;
+        if(eUtil.isEmpty(phone)==true){
+            alert('-를 제외하고 숫자만입력해주세요.');
+            regForm.phone.focus();
             return;
         }
         if(document.querySelector("#idCheck").value == 0){
@@ -209,22 +237,24 @@ document.addEventListener("DOMContentLoaded", function(){
             document.querySelector("#passwordMatchText").focus();
             return;
         }
+        if(document.querySelector("#nickName").value == 0){
+            alert('닉네임 중복체크를 수행하세요.');
+            document.querySelector("#nickName").focus();
+            return;
+        }
         
         $.ajax({
             type: "POST",
-            url:"/bdm/user/doSave.do",
+            url:"/commerce/user/doSave.do",
             asyn:"true",
             dataType:"html",
             data:{
                 id: document.querySelector("#id").value,
                 pw: document.querySelector("#pw").value,
-                email: document.querySelector("#email").value,
+                nickName: document.querySelector("#nickName").value,
                 name: document.querySelector("#name").value,
-                birth: document.querySelector("#birth").value,
-                gender: radioValue,
-                height: document.querySelector("#height").value,
-                weight: document.querySelector("#weight").value,
-                activity: document.querySelector("#activity").value
+                phone: document.querySelector("#phone").value,
+                email: document.querySelector("#email").value,
             },
             success:function(data){//통신 성공     
                console.log("success data:"+data);
@@ -234,7 +264,7 @@ document.addEventListener("DOMContentLoaded", function(){
                }else{
                    alert(parsedJSON.msgContents);
                }
-               window.location.href = "/bdm/beforeMain/moveToMain.do";
+               window.location.href = "/commerce/beforeMain/moveToMain.do";
             },
             error:function(data){//실패시 처리
                 console.log("error:"+data);
@@ -261,10 +291,16 @@ document.addEventListener("DOMContentLoaded", function(){
                <%-- id중복체크 수행 여부 확인:0(미수행),1(수행) --%>
                <input type="hidden" name="idCheck" id="idCheck" value="0">
                <input type="hidden" name="emailCheck" id="emailCheck" value="0">
+               <input type="hidden" name="nickNameCheck" id="nickNameCheck" value="0">               
                <div class = "mb-3">
                    <label for="id" class="form-label">아이디</label>
                    <input type="text"  class="form-control ppl_input" name="id" id="id" placeholder="아이디를 입력 하세요." size="20"  maxlength="30">
                    <input type="button" class="btn btn-primary" value="중복 체크" id="doCheckId">
+               </div>
+               <div class = "mb-3">
+                   <label for="nickName" class="form-label">닉네임</label>
+                   <input type="text"  class="form-control ppl_input" name="nickName" id="nickName" placeholder="닉네임을 입력 하세요." size="20"  maxlength="30">
+                   <input type="button" class="btn btn-primary" value="중복 체크" id="doCheckNickName">
                </div>
                <div class = "mb-3">
                    <label for="pw" class="form-label">비밀번호</label>
@@ -284,30 +320,6 @@ document.addEventListener("DOMContentLoaded", function(){
                    <label for="name" class="form-label">이름</label>
                    <input type="text"  class="form-control"  name="name" id="name" placeholder="이름을 입력 하세요." size="20"  maxlength="21">
                </div>
-               <div class="p-div">
-                   <label for="login" class="form-label">생년월일</label>
-                   <input type="text"  class="form-control" name="birth" id="birth" placeholder="앞 6자리만 입력하세요." size="20"  maxlength="6">
-               </div>
-               <div class="p-div" id = "gender">     
-                   <label for="recommend" class="form-label">성별</label>
-                   <input class="form-check-input" type="radio" name="flexRadioDefault" id="man" value = 1 checked>
-                   <label class="form-check-label" for="man">남자</label>
-                   <input class="form-check-input" type="radio" name="flexRadioDefault" id="woman" value = 2>
-                   <label class="form-check-label" for="woman">여자</label>         
-               </div>
-               <div class="p-div">
-                   <label for="email" class="form-label">키</label>
-                   <input type="text"  class="form-control" name="height" id="height" placeholder="키를 입력하세요" size="20"  maxlength="320">
-               </div>
-               <div class="p-div">
-                   <label for="regDt" class="form-label">몸무게</label>
-                   <input type="text" class="form-control"  name="weight" id="weight" placeholder="몸무게를 입력하세요" size="20"  maxlength="7">
-               </div>
-               <div class="p-div">
-                   <label for="activity" class="form-label">활동지수</label>
-                   <input type="text" class="form-control"  name="activity" id="activity" placeholder="활동지수를 입력하세요" size="20"  maxlength="7">
-               </div>
-           </form>
          </div>
          <!--// 회원 등록영역 ------------------------------------------------------>
          
@@ -318,8 +330,7 @@ document.addEventListener("DOMContentLoaded", function(){
                <input type="button" class="btn btn-primary" value="가입하기" id="doSave">
            </div>
        </div>
-         <!--// Button영역 ------------------------------------------------------>
-         
+         <!--// Button영역 ------------------------------------------------------>         
      </div>
 </body>
 </html>

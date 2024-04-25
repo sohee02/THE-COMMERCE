@@ -16,6 +16,8 @@ public interface UserService {
 
 	public int doCheckId(UserVO inVO) throws SQLException;
 	
+	public int doCheckPhone(UserVO inVO) throws SQLException;
+	
 	public int doSave(UserVO inVO) throws SQLException;
 	
 	public int doUpdate(UserVO inVO) throws SQLException;

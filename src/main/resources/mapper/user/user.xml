@@ -110,6 +110,12 @@
         WHERE id IN(#{id})
     </select>
     
+    <select id="doCheckPhone" parameterType = "com.test.commerce.user.domain.UserVO" resultType = "int">
+        SELECT COUNT(*) cnt
+        FROM users
+        WHERE phone IN(#{phone})
+    </select>
+    
     <insert id="doSave" parameterType = "com.test.commerce.user.domain.UserVO">
         INSERT INTO users(
 	        id,
