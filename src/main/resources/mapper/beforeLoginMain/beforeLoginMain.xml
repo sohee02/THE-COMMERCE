@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.test.commerce.beforeMain">
+
+    <select id="idCheck" parameterType="com.test.commerce.user.domain.UserVO" resultType="int">
+         SELECT                   
+            COUNT(*) cnt
+         FROM                     
+            user
+         WHERE id = #{id}
+    </select>
+    
+    <!-- idPassCheck -->
+    <select id="idPassCheck" parameterType="com.test.commerce.user.domain.UserVO" resultType="int">
+         SELECT                   
+            COUNT(*) cnt         
+         FROM                     
+            user                
+         WHERE id = #{id} 
+         AND   pw = #{pw}        
+    </select>
+        
+    <!-- login -->
+    <select id="doSelectOne" parameterType="com.test.commerce.user.domain.UserVO" resultType="com.test.commerce.user.domain.UserVO">
+        SELECT
+	        id,
+	        pw,
+	        nickname,
+	        phone,
+	        email,
+	        name,
+	        reg_dt
+         FROM               
+             user         
+         WHERE id = #{id}     
+    </select>
+  </mapper>

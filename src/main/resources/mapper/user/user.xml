@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.test.commerce.user">
+
+	<!-- div -->
+	<sql id="divCondition">
+		<choose>
+			<when test=" ''!=div and '20' == div ">20
+				AND div = '20'
+			</when>
+			<otherwise> 10
+				AND div = '10'
+			</otherwise>
+		</choose>
+	</sql>
+
+	<sql id="searchCondition">
+		<choose>
+			<when test=" ''!= searchDiv and '10' == searchDiv ">
+				AND id LIKE #{searchWord} || '%'
+			</when>
+			<when test=" ''!= searchDiv and '20' == searchDiv ">
+				AND nickName LIKE #{searchWord} || '%'
+			</when>
+			<when test=" ''!= searchDiv and '30' == searchDiv ">
+				AND name LIKE #{searchWord} || '%'
+			</when>
+		</choose>
+	</sql>
+	
+	<select id="doRetrieve" parameterType="UserVO"
+		resultType="UserVO">
+		SELECT A.*,B.totalCnt
+		FROM (
+			SELECT	
+				tt1.id,
+				tt1.pw,
+				tt1.nickName,
+				tt1.name,
+				tt1.phone,
+				tt1.email,
+				DECODE(TO_CHAR(tt1.reg_dt,'YYYYMMDD'), TO_CHAR(SYSDATE,'YYYYMMDD')
+				,TO_CHAR(tt1.reg_dt,'HH24:MI')
+				,TO_CHAR(tt1.reg_dt,'YYYY-MM-DD')) as regDt			
+			FROM (
+				SELECT ROWNUM rnum, T1.*
+				FROM (
+					SELECT *
+					FROM users
+					--WHERE 검색
+					WHERE 1=1
+				<!-- <include refid="divCondition"/> -->
+				<include refid="searchCondition" />
+					ORDER BY reg_dt DESC
+				)T1 --10,20,30,...
+	      		<![CDATA[   WHERE ROWNUM <=#{pageSize} * (#{pageNo}-1) + #{pageSize} ]]>
+			)TT1
+			--1,11,21,31,..
+	    	<![CDATA[ WHERE rnum >= #{pageSize} * (#{pageNo}-1) + 1 ]]>
+		)A
+		CROSS JOIN (
+			SELECT COUNT(*) totalCnt
+			FROM users
+			--WHERE 검색
+			WHERE 1=1
+			<!-- <include refid="divCondition"/> -->
+			<include refid="searchCondition" />
+		)B
+	</select>
+	
+
+    <delete id="doDelete" parameterType = "UserVO">
+        DELETE FROM users
+        WHERE id = #{id}
+    </delete>
+    
+    <update id="doUpdate" parameterType = "UserVO">
+        UPDATE users
+        SET nickName = #{nickName},
+        	phone = #{phone},
+            email = #{email},
+            name = #{name}
+        WHERE id = #{id}
+    </update>
+    
+    <select id="doCheckEmail" parameterType = "com.test.commerce.user.domain.UserVO" resultType = "int">
+        SELECT COUNT(*) cnt
+        FROM users
+        WHERE email IN(#{email})
+    </select>
+    
+    <select id="doCheckNickName" parameterType = "com.test.commerce.user.domain.UserVO" resultType = "int">
+        SELECT COUNT(*) cnt
+        FROM users
+        WHERE nickName IN(#{nickName})
+    </select>
+    
+    <select id="doCheckPassword" parameterType = "com.test.commerce.user.domain.UserVO" resultType = "int">
+        SELECT COUNT(*) cnt
+        FROM users
+        WHERE pw IN(#{pw})
+    </select>
+    
+    <select id="doCheckId" parameterType = "com.test.commerce.user.domain.UserVO" resultType = "int">
+        SELECT COUNT(*) cnt
+        FROM users
+        WHERE id IN(#{id})
+    </select>
+    
+    <insert id="doSave" parameterType = "com.test.commerce.user.domain.UserVO">
+        INSERT INTO users(
+	        id,
+	        pw,
+	        nickname,
+	        name,	        
+	        phone,
+	        email,
+	        reg_dt
+        ) VALUES (          
+            #{id},
+            #{pw},
+            #{nickName},            
+            #{name},            
+            #{phone},
+            #{email},
+            SYSDATE
+        )                   
+    </insert>
+    
+  </mapper>
